@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # wxpython widgets for using Jose Fonseca's cairo graphviz visualizer
 # Copyright (c) 2010, Willow Garage, Inc.
@@ -19,42 +19,37 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from xdot import *
+from smach_viewer.xdot.xdot import *
 
 
 __all__ = ['WxDotWindow', 'WxDotFrame']
 
 # We need to get the wx version with built-in cairo support
-import wxversion
-if wxversion.checkInstalled("2.8"):
-    wxversion.select("2.8")
-else:
-    print("wxversion 2.8 is not installed, installed versions are {}".format(wxversion.getInstalled()))
 import wx
 import wx.lib.wxcairo as wxcairo
 
 # This is a crazy hack to get this to work on 64-bit systems
-if 'wxMac' in wx.PlatformInfo:
-  pass # Implement if necessary
-elif 'wxMSW' in wx.PlatformInfo:
-  pass # Implement if necessary
-elif 'wxGTK' in wx.PlatformInfo:
-  import ctypes
-  gdkLib = wx.lib.wxcairo._findGDKLib()
-  gdkLib.gdk_cairo_create.restype = ctypes.c_void_p
+# if 'wxMac' in wx.PlatformInfo:
+#   pass # Implement if necessary
+# elif 'wxMSW' in wx.PlatformInfo:
+#   pass # Implement if necessary
+# elif 'wxGTK' in wx.PlatformInfo:
+#   import ctypes
+#   gdkLib = wx.lib.wxcairo._findGDKLib()
+#   gdkLib.gdk_cairo_create.restype = ctypes.c_void_p
 
 class WxDragAction(object):
   def __init__(self, dot_widget):
     self.dot_widget = dot_widget
 
   def on_button_press(self, event):
-    x,y = event.GetPositionTuple()
+    x,y = event.GetPosition()
     self.startmousex = self.prevmousex = x
     self.startmousey = self.prevmousey = y
     self.start()
 
   def on_motion_notify(self, event):
-    x,y = event.GetPositionTuple()
+    x,y = event.GetPosition()
     deltax = self.prevmousex - x
     deltay = self.prevmousey - y
     self.drag(deltax, deltay)
@@ -62,7 +57,7 @@ class WxDragAction(object):
     self.prevmousey = y
 
   def on_button_release(self, event):
-    x,y = event.GetPositionTuple()
+    x,y = event.GetPosition()
     self.stopmousex = x
     self.stopmousey = y
     self.stop()
@@ -271,7 +266,7 @@ class WxDotWindow(wx.Panel):
 
   ### Cursor manipulation
   def set_cursor(self, cursor_type):
-    self.cursor = wx.StockCursor(cursor_type)
+    self.cursor = wx.Cursor(cursor_type)
     self.SetCursor(self.cursor)
 
   ### Zooming methods
@@ -363,7 +358,7 @@ class WxDotWindow(wx.Panel):
     return WxNullAction(self)
 
   def OnMouse(self, event):
-    x,y = event.GetPositionTuple()
+    x,y = event.GetPosition()
 
     item = None
 
@@ -436,28 +431,33 @@ class WxDotWindow(wx.Panel):
     self.filter = filter
 
   def set_dotcode(self, dotcode, filename='<stdin>'):
-    if isinstance(dotcode, unicode):
-      dotcode = dotcode.encode('utf8')
+    # if isinstance(dotcode, str):
+    #   dotcode = dotcode.encode('utf8')
     p = subprocess.Popen(
       [self.filter, '-Txdot'],
       stdin=subprocess.PIPE,
       stdout=subprocess.PIPE,
       stderr=subprocess.PIPE,
       shell=False,
-      universal_newlines=True
+      universal_newlines=True,
+      text=True
     )
     xdotcode, error = p.communicate(dotcode)
     if p.returncode != 0:
       print("ERROR PARSING DOT CODE {}".format(error))
-      dialog = Gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
+      dialog = Gtk.MessageDialog(type=Gtk.MESSAGE_ERROR,
                      message_format=error,
-                     buttons=gtk.BUTTONS_OK)
+                     buttons=Gtk.BUTTONS_OK)
       dialog.set_title('Dot Viewer')
       dialog.run()
       dialog.destroy()
       return False
     try:
-      self.set_xdotcode(xdotcode)
+      if isinstance(xdotcode, bytes):
+        self.set_xdotcode(xdotcode)
+      else:
+        xdotcode = bytes(xdotcode, 'utf8')
+        self.set_xdotcode(xdotcode)
 
       # Store references to all the items
       self.items_by_url = {}
@@ -470,9 +470,9 @@ class WxDotWindow(wx.Panel):
 
     except ParseError as ex:
       print("ERROR PARSING XDOT CODE")
-      dialog = gtk.MessageDialog(type=gtk.MESSAGE_ERROR,
+      dialog = Gtk.MessageDialog(type=Gtk.MESSAGE_ERROR,
                      message_format=str(ex),
-                     buttons=gtk.BUTTONS_OK)
+                     buttons=Gtk.BUTTONS_OK)
       dialog.set_title('Dot Viewer')
       dialog.run()
       dialog.destroy()

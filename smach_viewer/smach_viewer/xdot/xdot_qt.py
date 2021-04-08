@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2008 Jose Fonseca
 #
@@ -41,7 +41,7 @@ except:
     from PyQt5 import *
     from PyQt5.QtCore import *
     from PyQt5.QtGui import *
-    from python_qt_binding.QtWidgets import QWidget, QMainWindow
+    from PyQt5.QtWidgets import QWidget, QMainWindow
 
 #from python_qt_binding import  *
 #from python_qt_binding.QtCore import  *

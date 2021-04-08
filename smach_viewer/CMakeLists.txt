@@ -11,7 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 message(STATUS "Installing system python-gi python-gi-cairo libgtk-3-dev")
-execute_process(COMMAND apt-get install -y python-gi python-gi-cairo libgtk-3-dev)
+execute_process(COMMAND apt-get install -y python-gi python-gi-cairo python-wxversion libgtk-3-dev)
 
 message(STATUS "Installing python3 wxpython graphviz")
 execute_process(COMMAND pip3 install wxpython graphviz)
@@ -25,7 +25,7 @@ find_package(smach_msgs REQUIRED)
 ament_python_install_package(${PROJECT_NAME})
 
 install(PROGRAMS
-  scripts/smach_viewer.py
+  ${PROJECT_NAME}/smach_viewer_gui.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

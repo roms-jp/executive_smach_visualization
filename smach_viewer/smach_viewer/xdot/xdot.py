@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2008-2015 Jose Fonseca
 #
@@ -573,8 +573,8 @@ class XDotAttrParser:
         return self.pos < len(self.buf)
 
     def unescape(self, buf):
-        buf = buf.replace('\\"', '"')
-        buf = buf.replace('\\n', '\n')
+        buf = buf.replace(b'\\"', b'"')
+        buf = buf.replace(b'\\n', b'\n')
         return buf
 
     def read_code(self):
