@@ -1,4 +1,6 @@
-<package>
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>smach_viewer</name>
   <version>3.0.1</version>
   <description>
@@ -20,21 +22,19 @@
 
   <author email="jbo@jhu.edu">Jonathan Bohren</author>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>rostest</build_depend>
-
-  <!-- Dependencies needed after this package is compiled. -->
-  <run_depend>smach_ros</run_depend>
-  <run_depend>smach_msgs</run_depend>
-  <!-- originally depends on xdot : https://github.com/jbohren/xdot/blob/2.0.1/package.xml#L25-L26 -->
-  <run_depend>wxpython</run_depend>
-  <run_depend>graphviz</run_depend>
-  <run_depend>python-gi</run_depend>
-  <run_depend>python-gi-cairo</run_depend>
-  <run_depend>gtk3</run_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>smach_ros</exec_depend>
+  <exec_depend>smach</exec_depend>
+  <exec_depend>smach_msgs</exec_depend>
+  <exec_depend>wxpython</exec_depend>
+  <exec_depend>graphviz</exec_depend>
+  <exec_depend>python-gi</exec_depend>
+  <exec_depend>python-gi-cairo</exec_depend>
+  <exec_depend>gtk3</exec_depend>
 
   <export>
-
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
