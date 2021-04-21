@@ -570,16 +570,15 @@ class XDotAttrParser:
         return self.pos < len(self.buf)
 
     def unescape(self, buf):
-        buf = buf.replace(b'\\"', b'"')
-        buf = buf.replace(b"\\n", b"\n")
+        buf = buf.replace('\\"', '"')
+        buf = buf.replace("\\n", "\n")
         return buf
 
     def read_code(self):
-        pos = self.buf.find(b" ", self.pos)
+        pos = self.buf.find(" ", self.pos)
         res = self.buf[self.pos : pos]
         self.pos = pos + 1
         self.skip_space()
-        res = res.decode("utf-8")
         return res
 
     def skip_space(self):
@@ -599,11 +598,10 @@ class XDotAttrParser:
 
     def read_text(self):
         num = self.read_int()
-        pos = self.buf.find(b"-", self.pos) + 1
+        pos = self.buf.find("-", self.pos) + 1
         self.pos = pos + num
         res = self.buf[pos : self.pos]
         self.skip_space()
-        res = res.decode("utf-8")
         return res
 
     def read_polygon(self):
@@ -842,13 +840,13 @@ class Scanner:
         if self.ignorecase:
             flags |= re.IGNORECASE
         self.tokens_re = re.compile(
-            b"|".join([b"(" + regexp + b")" for type, regexp, test_lit in self.tokens]),
+            "|".join(["(" + regexp + ")" for type, regexp, test_lit in self.tokens]),
             flags,
         )
 
     def next(self, buf, pos):
         if pos >= len(buf):
-            return EOF, b"", pos
+            return EOF, "", pos
         mo = self.tokens_re.match(buf, pos)
         if mo:
             text = mo.group()
@@ -876,7 +874,7 @@ class Lexer:
     scanner = None
     tabsize = 8
 
-    newline_re = re.compile(br"\r\n?|\n")
+    newline_re = re.compile(r"\r\n?|\n")
 
     def __init__(self, buf=None, pos=0, filename=None, fp=None):
         if fp is not None:
@@ -895,7 +893,7 @@ class Lexer:
                     buf = mmap.mmap(fileno, length, access=mmap.ACCESS_READ)
                     pos = os.lseek(fileno, 0, 1)
                 else:
-                    buf = b""
+                    buf = ""
                     pos = 0
 
             if filename is None:
@@ -918,7 +916,7 @@ class Lexer:
             col = self.col
 
             type, text, endpos = self.scanner.next(self.buf, pos)
-            assert isinstance(text, bytes)
+            assert isinstance(text, str)
             assert pos + len(text) == endpos
             self.consume(text)
             type, text = self.filter(type, text)
@@ -943,7 +941,7 @@ class Lexer:
 
         # update column number
         while True:
-            tabpos = text.find(b"\t", pos)
+            tabpos = text.find("\t", pos)
             if tabpos == -1:
                 break
             self.col += tabpos - pos
@@ -1011,40 +1009,40 @@ class DotScanner(Scanner):
     # token regular expression table
     tokens = [
         # whitespace and comments
-        (SKIP, br"[ \t\f\r\n\v]+|" br"//[^\r\n]*|" br"/\*.*?\*/|" br"#[^\r\n]*", False),
+        (SKIP, r"[ \t\f\r\n\v]+|" r"//[^\r\n]*|" r"/\*.*?\*/|" r"#[^\r\n]*", False),
         # Alphanumeric IDs
-        (ID, br"[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*", True),
+        (ID, r"[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*", True),
         # Numeric IDs
-        (ID, br"-?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)", False),
+        (ID, r"-?(?:\.[0-9]+|[0-9]+(?:\.[0-9]*)?)", False),
         # String IDs
-        (STR_ID, br'"[^"\\]*(?:\\.[^"\\]*)*"', False),
+        (STR_ID, r'"[^"\\]*(?:\\.[^"\\]*)*"', False),
         # HTML IDs
-        (HTML_ID, br"<[^<>]*(?:<[^<>]*>[^<>]*)*>", False),
+        (HTML_ID, r"<[^<>]*(?:<[^<>]*>[^<>]*)*>", False),
         # Edge operators
-        (EDGE_OP, br"-[>-]", False),
+        (EDGE_OP, r"-[>-]", False),
     ]
 
     # symbol table
     symbols = {
-        b"[": LSQUARE,
-        b"]": RSQUARE,
-        b"{": LCURLY,
-        b"}": RCURLY,
-        b",": COMMA,
-        b":": COLON,
-        b";": SEMI,
-        b"=": EQUAL,
-        b"+": PLUS,
+        "[": LSQUARE,
+        "]": RSQUARE,
+        "{": LCURLY,
+        "}": RCURLY,
+        ",": COMMA,
+        ":": COLON,
+        ";": SEMI,
+        "=": EQUAL,
+        "+": PLUS,
     }
 
     # literal table
     literals = {
-        b"strict": STRICT,
-        b"graph": GRAPH,
-        b"digraph": DIGRAPH,
-        b"node": NODE,
-        b"edge": EDGE,
-        b"subgraph": SUBGRAPH,
+        "strict": STRICT,
+        "graph": GRAPH,
+        "digraph": DIGRAPH,
+        "node": NODE,
+        "edge": EDGE,
+        "subgraph": SUBGRAPH,
     }
 
     ignorecase = True
@@ -1060,12 +1058,12 @@ class DotLexer(Lexer):
             text = text[1:-1]
 
             # line continuations
-            text = text.replace(b"\\\r\n", b"")
-            text = text.replace(b"\\\r", b"")
-            text = text.replace(b"\\\n", b"")
+            text = text.replace("\\\r\n", "")
+            text = text.replace("\\\r", "")
+            text = text.replace("\\\n", "")
 
             # quotes
-            text = text.replace(b'\\"', b'"')
+            text = text.replace('\\"', '"')
 
             # layout engines recognize other escape codes (many non-standard)
             # but we don't translate them here
@@ -1157,7 +1155,6 @@ class DotParser(Parser):
             self.consume()
             while self.lookahead.type != RSQUARE:
                 name, value = self.parse_attr()
-                name = name.decode("utf-8")
                 attrs[name] = value
                 if self.lookahead.type == COMMA:
                     self.consume()
@@ -1170,7 +1167,7 @@ class DotParser(Parser):
             self.consume()
             value = self.parse_id()
         else:
-            value = b"true"
+            value = "true"
         return name, value
 
     def parse_node_id(self):
@@ -1245,7 +1242,7 @@ class XDotParser(DotParser):
                 return
 
             if bb:
-                xmin, ymin, xmax, ymax = map(float, bb.split(b","))
+                xmin, ymin, xmax, ymax = map(float, bb.split(","))
 
                 self.xoffset = -xmin
                 self.yoffset = -ymax
@@ -1313,13 +1310,13 @@ class XDotParser(DotParser):
         )
 
     def parse_node_pos(self, pos):
-        x, y = pos.split(b",")
+        x, y = pos.split(",")
         return self.transform(float(x), float(y))
 
     def parse_edge_pos(self, pos):
         points = []
-        for entry in pos.split(b" "):
-            fields = entry.split(b",")
+        for entry in pos.split(" "):
+            fields = entry.split(",")
             try:
                 x, y = fields
             except ValueError:
@@ -1605,7 +1602,6 @@ class DotWidget(Gtk.DrawingArea):
             xdotcode, error = p.communicate(dotcode)
         error = error.rstrip()
         if error:
-            error = error.decode()
             sys.stderr.write(error + "\n")
         if p.returncode != 0:
             self.error_dialog(error)
@@ -1614,8 +1610,8 @@ class DotWidget(Gtk.DrawingArea):
 
     def set_dotcode(self, dotcode, filename=None):
         self.openfilename = None
-        if isinstance(dotcode, str):
-            dotcode = dotcode.encode("utf-8")
+        if isinstance(dotcode, bytes):
+            dotcode = dotcode.decode("utf-8")
         xdotcode = self.run_filter(dotcode)
         if xdotcode is None:
             return False
@@ -1633,7 +1629,7 @@ class DotWidget(Gtk.DrawingArea):
             return True
 
     def set_xdotcode(self, xdotcode):
-        assert isinstance(xdotcode, bytes)
+        assert isinstance(xdotcode, str)
         parser = XDotParser(xdotcode)
         self.graph = parser.parse()
         self.zoom_image(self.zoom_ratio, center=True)
