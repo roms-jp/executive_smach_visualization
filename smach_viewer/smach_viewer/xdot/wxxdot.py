@@ -478,9 +478,9 @@ class WxDotWindow(wx.Panel):
             return False
         try:
             if isinstance(xdotcode, bytes):
+                xdotcode = xdotcode.decode("utf-8")
                 self.set_xdotcode(xdotcode)
             else:
-                xdotcode = bytes(xdotcode, "utf8")
                 self.set_xdotcode(xdotcode)
 
             # Store references to all the items
