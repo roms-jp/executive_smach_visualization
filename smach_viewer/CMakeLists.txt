@@ -10,12 +10,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# message(STATUS "Installing system python-gi python-gi-cairo libgtk-3-dev")
-# execute_process(COMMAND apt-get install -y python-gi python-gi-cairo python-wxversion libgtk-3-dev)
-# 
-# message(STATUS "Installing python3 wxpython graphviz")
-# execute_process(COMMAND pip3 install wxpython graphviz)
-
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
