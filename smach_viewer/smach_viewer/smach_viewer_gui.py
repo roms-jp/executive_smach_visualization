@@ -35,7 +35,7 @@ import rclpy
 from rclpy.time import Duration
 from rclpy.executors import SingleThreadedExecutor
 import rospkg
-import roslib
+# import roslib
 
 from smach_msgs.msg import (
     SmachContainerStatus,
@@ -182,7 +182,7 @@ class ContainerNode:
                 # This will only happen once for each package
                 modulename = ie.args[0][16:]
                 packagename = modulename[0 : modulename.find(".")]
-                roslib.load_manifest(packagename)
+                # roslib.load_manifest(packagename)
                 self._local_data._data = pickle.loads(msg.local_data)
 
         # Store the info string
