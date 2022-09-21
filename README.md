@@ -4,9 +4,18 @@ executive_smach_visualization [![Build Status](https://travis-ci.com/ros-visuali
 ## Installing Dependencies
 
 ```bash
+# update
+sudo apt-get update
+
 # Installing system python-gi python-gi-cairo libgtk-3-dev
 sudo apt-get install -y python-gi python-gi-cairo python-wxversion libgtk-3-dev
 
 # Installing python3 wxpython graphviz
-pip3 install wxpython graphviz
+sudo apt install python3-wxgtk4.0 --fix-missing
+```
+
+## Command
+
+```bash
+ros2 run smach_viewer smach_viewer_gui.py
 ```
